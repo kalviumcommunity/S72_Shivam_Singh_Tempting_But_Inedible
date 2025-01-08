@@ -2,7 +2,7 @@
 
 **Project Title:**  
 -
-"List of Things That Shouldn't Be Eaten but Look Delicious"
+"Tempting But Inedible"
 
 ---
 
