@@ -1,0 +1,11 @@
+{
+  "name": "s72_shivam_singh_tempting_but_inedible",
+  "version": "1.0.0",
+  "description": "**Project Title:**  \r -\r \"Tempting But Inedible\"",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "",
+  "license": "ISC"
+}
