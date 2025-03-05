@@ -63,3 +63,9 @@ This project is a web application where users can log in to create and manage a 
 **Render Link**
 
 https://s72-shivam-singh-tempting-but-inedible.onrender.com
+
+
+
+**Deployment link**
+
+https://5e31112c.asap-62r.pages.dev/
