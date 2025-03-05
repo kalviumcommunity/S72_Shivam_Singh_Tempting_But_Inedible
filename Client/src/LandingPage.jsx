@@ -1,4 +1,5 @@
 import React from "react";
+import InedibleItem from "./components/InedibleItem";
 
 const LandingPage = () => {
   const items = [
