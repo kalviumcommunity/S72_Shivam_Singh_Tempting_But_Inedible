@@ -1,0 +1,27 @@
+{
+  "name": "s72_shivam_singh_tempting_but_inedible",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "concurrently \"npm run start-backend\" \"npm run start-frontend\"",
+    "start-backend": "cd backend && node server.js",
+    "start-frontend": "cd frontend && npm start"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/kalviumcommunity/S72_Shivam_Singh_Tempting_But_Inedible.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/kalviumcommunity/S72_Shivam_Singh_Tempting_But_Inedible/issues"
+  },
+  "homepage": "https://github.com/kalviumcommunity/S72_Shivam_Singh_Tempting_But_Inedible#readme",
+  "description": "",
+  "devDependencies": {
+    "concurrently": "^9.1.2"
+  }
+}
