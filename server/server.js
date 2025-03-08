@@ -2,7 +2,6 @@ const express = require("express");
 const dotenv = require("dotenv");
 const { MongoClient } = require("mongodb");
 const cors = require("cors");
-const { default: Entities } = require("../Client/src/components/Entities");
 
 dotenv.config();
 
@@ -10,37 +9,37 @@ const app = express();
 const PORT = process.env.PORT || 3000;
 
 const mongoURI = process.env.MONGO_URI;
-let dbStatus = "Disconnected";
+if (!mongoURI) {
+    console.error("MONGO_URI is not set. Exiting...");
+    process.exit(1);
+}
+
+let db;
+let client;
 
 // Enable CORS
 app.use(cors());
-
-// Middleware
 app.use(express.json());
 
+// Function to connect to MongoDB
 async function connectDB() {
     try {
-        const client = new MongoClient(mongoURI);
+        client = new MongoClient(mongoURI);
         await client.connect();
-        dbStatus = "Connected to MongoDB";
-        console.log(dbStatus);
-        return client.db();
+        db = client.db();
+        console.log("Connected to MongoDB");
     } catch (error) {
-        dbStatus = "Error connecting to MongoDB";
         console.error("MongoDB Connection Error:", error);
-        return null;
+        process.exit(1);
     }
 }
 
-// Connect to the database
-let db;
-(async () => {
-    db = await connectDB();
-})();
+// Connect to the database at startup
+connectDB();
 
 // Routes
 app.get("/", (req, res) => {
-    res.json({ message: "Welcome!", database: dbStatus });
+    res.json({ message: "Welcome!", database: db ? "Connected" : "Disconnected" });
 });
 
 app.get("/ping", (req, res) => {
@@ -49,10 +48,10 @@ app.get("/ping", (req, res) => {
 
 // API route to fetch entities
 app.get("/api/entities", async (req, res) => {
+    if (!db) {
+        return res.status(500).json({ error: "Database connection not established" });
+    }
     try {
-        if (!db) {
-            throw new Error("Database connection not established");
-        }
         const items = await db.collection("items").find().toArray();
         res.json(items);
     } catch (error) {
@@ -65,6 +64,13 @@ app.get("/api/entities", async (req, res) => {
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send("Something broke!");
+});
+
+// Graceful shutdown to close MongoDB connection
+process.on("SIGINT", async () => {
+    console.log("Closing MongoDB connection...");
+    if (client) await client.close();
+    process.exit(0);
 });
 
 app.listen(PORT, () => {
