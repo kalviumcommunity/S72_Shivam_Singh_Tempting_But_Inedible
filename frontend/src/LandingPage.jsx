@@ -3,21 +3,24 @@ import Entities from "./components/Entities";
 
 const LandingPage = () => {
   return (  
-    <div style={{ 
-      textAlign: "center", 
-      fontFamily: "Arial, sans-serif", 
-      padding: "20px",
-      backgroundColor: "#121212",
-      color: "#f0f0f0",
-      minHeight: "100vh"
-    }}>
-      <h1>🥄 Tempting but Inedible 🍭</h1>
-      <p>Welcome to ASAP (As Silly As Possible) – where things look delicious but shouldn't be eaten! 😆</p>
+    <div className="landing-page">
+      <header className="header">
+        <h1>✨ Tempting but Inedible(ASAP) ✨</h1>
+        <p className="subtitle">
+          Welcome to a world where beauty meets deception. Discover our collection of 
+          visually stunning but completely inedible treasures. Each item is a testament 
+          to the art of visual temptation!
+        </p>
+      </header>
       
-      <h2>🧐 Things You Should NOT Eat:</h2>
-      <Entities />
+      <main>
+        <h2>Forbidden Delights Collection</h2>
+        <Entities />
+      </main>
   
-      <p style={{ marginTop: "20px" }}>🥄 Remember, just because it looks tasty, doesn't mean it is! 😂</p>
+      <footer>
+        <p>Remember: Beauty can be deceiving. Admire with your eyes, not with your appetite! ✨</p>
+      </footer>
     </div>
   );
 };
