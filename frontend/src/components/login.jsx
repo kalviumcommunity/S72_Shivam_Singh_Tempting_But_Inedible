@@ -1,19 +1,15 @@
 import React from 'react';
 import styled from 'styled-components';
 
-const AuthPage = () => {
+const Login = () => {
   return (
     <StyledWrapper>
       <div className="container">
         <div className="card">
-          <a className="singup">Sign Up</a>
-          <div className="inputBox1">
-            <input type="text" required="required" />
-            <span className="user">Email</span>
-          </div>
+          <a className="login">Log in</a>
           <div className="inputBox">
             <input type="text" required="required" />
-            <span>Username</span>
+            <span className="user">Username</span>
           </div>
           <div className="inputBox">
             <input type="password" required="required" />
@@ -27,14 +23,13 @@ const AuthPage = () => {
 }
 
 const StyledWrapper = styled.div`
-  .singup {
+  .login {
     color: #000;
     text-transform: uppercase;
     letter-spacing: 2px;
     display: block;
     font-weight: bold;
     font-size: x-large;
-    margin-top: 1.5em;
   }
 
   .card {
@@ -45,21 +40,18 @@ const StyledWrapper = styled.div`
     width: 300px;
     flex-direction: column;
     gap: 35px;
-    border-radius: 15px;
     background: #e3e3e3;
-    // box-shadow: 16px 16px 32px #c8c8c8,
-    //       -16px -16px 32px #fefefe;
+    box-shadow: 16px 16px 32px #c8c8c8,
+          -16px -16px 32px #fefefe;
     border-radius: 8px;
   }
 
-  .inputBox,
-  .inputBox1 {
+  .inputBox {
     position: relative;
     width: 250px;
   }
 
-  .inputBox input,
-  .inputBox1 input {
+  .inputBox input {
     width: 100%;
     padding: 10px;
     outline: none;
@@ -73,8 +65,7 @@ const StyledWrapper = styled.div`
     border-bottom-left-radius: 8px;
   }
 
-  .inputBox span,
-  .inputBox1 span {
+  .inputBox span {
     margin-top: 5px;
     position: absolute;
     left: 0;
@@ -101,21 +92,8 @@ const StyledWrapper = styled.div`
     border: 2px;
   }
 
-  .inputBox1 input:valid~span,
-  .inputBox1 input:focus~span {
-    transform: translateX(156px) translateY(-15px);
-    font-size: 0.8em;
-    padding: 5px 10px;
-    background: #000;
-    letter-spacing: 0.2em;
-    color: #fff;
-    border: 2px;
-  }
-
   .inputBox input:valid,
-  .inputBox input:focus,
-  .inputBox1 input:valid,
-  .inputBox1 input:focus {
+  .inputBox input:focus {
     border: 2px solid #000;
     border-radius: 8px;
   }
@@ -131,7 +109,7 @@ const StyledWrapper = styled.div`
     text-transform: uppercase;
     font-size: 10px;
     letter-spacing: 2px;
-    margin-bottom: 3em;
+    margin-bottom: 1em;
   }
 
   .enter:hover {
@@ -139,4 +117,4 @@ const StyledWrapper = styled.div`
     color: white;
   }`;
 
-export default AuthPage;
+export default Login;

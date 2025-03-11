@@ -1,7 +1,9 @@
 // LandingPage.js
 import React, { useState } from "react";
 import Entities from "./components/Entities";
-import AuthPage from "./components/AuthPage";
+import AuthPage from "./components/signup";
+
+
 
 const LandingPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
