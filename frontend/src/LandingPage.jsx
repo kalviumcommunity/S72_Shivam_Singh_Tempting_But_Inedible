@@ -1,15 +1,23 @@
-// LandingPage.js
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import Entities from "./components/Entities";
 import AuthPage from "./components/signup";
 
-
-
 const LandingPage = () => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);
+  const navigate = useNavigate();
 
-  const handleLogin = () => {
-    setIsAuthenticated(true);
+  useEffect(() => {
+    // Check if user is logged in
+    const user = localStorage.getItem('user');
+    if (user) {
+      setIsAuthenticated(true);
+    }
+  }, []);
+
+  const handleLogout = () => {
+    localStorage.removeItem('user');
+    setIsAuthenticated(false);
   };
 
   return (
@@ -17,6 +25,24 @@ const LandingPage = () => {
       {isAuthenticated ? (
         <div>
           <header className="header">
+            <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '1rem' }}>
+              <button
+                onClick={handleLogout}
+                style={{
+                  padding: '0.5rem 1rem',
+                  backgroundColor: '#f44336',
+                  color: 'white',
+                  border: 'none',
+                  borderRadius: '4px',
+                  cursor: 'pointer',
+                  transition: 'background-color 0.3s'
+                }}
+                onMouseOver={(e) => e.target.style.backgroundColor = '#d32f2f'}
+                onMouseOut={(e) => e.target.style.backgroundColor = '#f44336'}
+              >
+                Logout
+              </button>
+            </div>
             <h1> Tempting but Inedible(ASAP) </h1>
             <p className="subtitle">
               Welcome to a world where beauty meets deception. Discover our collection of 
@@ -35,7 +61,7 @@ const LandingPage = () => {
           </footer>
         </div>
       ) : (
-        <AuthPage handleLogin={handleLogin} />
+        <AuthPage />
       )}
     </div>
   );

@@ -1,9 +1,46 @@
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
 const AuthPage = () => {
   const navigate = useNavigate();
+  const [formData, setFormData] = useState({
+    email: '',
+    username: '',
+    password: ''
+  });
+  const [error, setError] = useState('');
+
+  const handleChange = (e) => {
+    setFormData({
+      ...formData,
+      [e.target.name]: e.target.value
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      const response = await fetch('http://localhost:3000/api/signup', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(formData)
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || 'Signup failed');
+      }
+
+      // Redirect to login page after successful signup
+      navigate('/login');
+    } catch (err) {
+      setError(err.message);
+    }
+  };
 
   const handleLoginClick = () => {
     navigate('/login');
@@ -13,19 +50,40 @@ const AuthPage = () => {
     <StyledWrapper>
       <div className="card">
         <a className="singup">Sign Up</a>
-        <div className="inputBox1">
-          <input type="text" required />
-          <span className="user">Email</span>
-        </div>
-        <div className="inputBox">
-          <input type="text" required />
-          <span>Username</span>
-        </div>
-        <div className="inputBox">
-          <input type="password" required />
-          <span>Password</span>
-        </div>
-        <button className="enter">Enter</button>
+        {error && <p className="error">{error}</p>}
+        <form onSubmit={handleSubmit}>
+          <div className="inputBox1">
+            <input 
+              type="email" 
+              name="email"
+              value={formData.email}
+              onChange={handleChange}
+              required 
+            />
+            <span className="user">Email</span>
+          </div>
+          <div className="inputBox">
+            <input 
+              type="text"
+              name="username"
+              value={formData.username}
+              onChange={handleChange}
+              required 
+            />
+            <span>Username</span>
+          </div>
+          <div className="inputBox">
+            <input 
+              type="password"
+              name="password"
+              value={formData.password}
+              onChange={handleChange}
+              required 
+            />
+            <span>Password</span>
+          </div>
+          <button type="submit" className="enter">Sign Up</button>
+        </form>
         <div className="login-section">
           <p className="login-text">Already have an account?</p>
           <button onClick={handleLoginClick} className="login-button">Login</button>
@@ -36,15 +94,13 @@ const AuthPage = () => {
 };
 
 const StyledWrapper = styled.div`
-  margin: 0;
-  padding: 0;
-  overflow: hidden;
+display: flex;
+justify-content: center;
+align-items: center;
+background-color: transparent;
+padding-top: 160px;
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  min-height: 100vh;
-  background-color: transparent;
+
 
   .login-section {
     margin-top: 15px;
@@ -90,18 +146,19 @@ const StyledWrapper = styled.div`
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 15px;
-    width: 200px;
-    padding: 10px;
+    gap: 1rem;
+    width: 250px;
+    min-height: 300px;
     background: #e3e3e3;
     border-radius: 8px;
-    margin: 0;
+    padding: 15px;
   }
 
   .inputBox,
   .inputBox1 {
     position: relative;
     width: 180px;
+    margin-bottom: 20px;
   }
 
   .inputBox input,
@@ -178,7 +235,7 @@ const StyledWrapper = styled.div`
   .enter:hover {
     background-color: #000;
     color: #fff;
-  }
+  } 
 `;
 
-export default AuthPage;
+export default AuthPage; 

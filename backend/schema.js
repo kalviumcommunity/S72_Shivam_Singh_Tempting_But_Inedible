@@ -1,6 +1,7 @@
 const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const { default: Entities } = require('../frontend/src/components/Entities');
+
+
 
 dotenv.config();
 

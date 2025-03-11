@@ -1,7 +1,9 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const { MongoClient, ObjectId } = require("mongodb");
 const cors = require("cors");
+const mongoose = require("mongoose");
+const bcrypt = require("bcryptjs");
+const { User, Entity } = require("./schema"); // Import Entity model
 
 dotenv.config();
 
@@ -14,153 +16,91 @@ if (!mongoURI) {
     process.exit(1);
 }
 
-let db;
-let client;
-
-// Enable CORS
+// Enable CORS & JSON parsing
 app.use(cors());
 app.use(express.json());
 
-// Function to connect to MongoDB
-async function connectDB() {
+// Connect to MongoDB
+mongoose.connect(mongoURI, {
+  useNewUrlParser: true,
+  useUnifiedTopology: true
+})
+.then(() => console.log("✅ Connected to MongoDB Atlas"))
+.catch(err => console.error("❌ MongoDB Connection Error:", err));
+
+// Auth Routes
+app.post("/api/signup", async (req, res) => {
     try {
-        client = new MongoClient(mongoURI);
-        await client.connect();
-        db = client.db("ASAP");
-        console.log("✅ Connected to database: ASAP");
+        const { email, username, password } = req.body;
+
+        // Check if user already exists
+        const existingUser = await User.findOne({ email });
+        if (existingUser) {
+            return res.status(400).json({ error: "User already exists" });
+        }
+
+        // Hash password
+        const salt = await bcrypt.genSalt(10);
+        const hashedPassword = await bcrypt.hash(password, salt);
+
+        // Create new user
+        const user = new User({
+            username,
+            email,
+            password: hashedPassword
+        });
+
+        await user.save();
+        res.status(201).json({ message: "User created successfully" });
     } catch (error) {
-        console.error("❌ MongoDB Connection Error:", error);
-        process.exit(1);
+        console.error("Signup error:", error);
+        res.status(500).json({ error: "Server error" });
     }
-}
-
-// Connect to the database at startup
-connectDB();
-
-// Routes
-app.get("/", (req, res) => {
-    res.json({ message: "Welcome!", database: db ? "Connected" : "Disconnected" });
 });
 
-// GET - Read all entities
+app.post("/api/login", async (req, res) => {
+    try {
+        const { email, password } = req.body;
+
+        // Find user
+        const user = await User.findOne({ email });
+        if (!user) {
+            return res.status(400).json({ error: "Invalid credentials" });
+        }
+
+        // Check password
+        const isMatch = await bcrypt.compare(password, user.password);
+        if (!isMatch) {
+            return res.status(400).json({ error: "Invalid credentials" });
+        }
+
+        res.json({ 
+            message: "Login successful",
+            user: {
+                id: user._id,
+                username: user.username,
+                email: user.email
+            }
+        });
+    } catch (error) {
+        console.error("Login error:", error);
+        res.status(500).json({ error: "Server error" });
+    }
+});
+
+// Fetch Entities (Fixed)
 app.get("/api/entities", async (req, res) => {
     try {
-        if (!db) {
+        if (!mongoose.connection.readyState) {
             return res.status(500).json({ error: "Database connection not established" });
         }
-        const entities = await db.collection("entities").find().toArray();
+
+        const entities = await Entity.find(); // ✅ Use Mongoose model instead of db.collection()
         res.json(entities);
     } catch (error) {
         console.error("Error fetching entities:", error);
         res.status(500).json({ error: "Failed to fetch entities" });
     }
-});
-
-// POST - Create new entity
-app.post("/api/entities", async (req, res) => {
-    try {
-        if (!db) {
-            return res.status(500).json({ error: "Database connection not established" });
-        }
-        
-        const { name, description, category, img } = req.body;
-        
-        if (!name || !category) {
-            return res.status(400).json({ error: "Name and category are required" });
-        }
-
-        const newEntity = {
-            name,
-            description: description || "",
-            category,
-            img: img || "",
-            createdBy: "user",
-            createdAt: new Date()
-        };
-
-        const result = await db.collection("entities").insertOne(newEntity);
-        
-        if (!result.acknowledged) {
-            throw new Error("Insert operation not acknowledged");
-        }
-
-        res.status(201).json({
-            message: "Entity created successfully",
-            entity: { ...newEntity, _id: result.insertedId }
-        });
-    } catch (error) {
-        console.error("Error creating entity:", error);
-        res.status(500).json({
-            error: "Failed to create entity",
-            details: error.message
-        });
-    }
-});
-
-// PUT - Update entity
-app.put("/api/entities/:id", async (req, res) => {
-    try {
-        if (!db) {
-            return res.status(500).json({ error: "Database connection not established" });
-        }
-
-        const { id } = req.params;
-        const { name, description, category, img } = req.body;
-
-        if (!name || !category) {
-            return res.status(400).json({ error: "Name and category are required" });
-        }
-
-        const result = await db.collection("entities").updateOne(
-            { _id: new ObjectId(id) },
-            {
-                $set: {
-                    name,
-                    description: description || "",
-                    category,
-                    img: img || "",
-                    updatedAt: new Date()
-                }
-            }
-        );
-
-        if (!result.matchedCount) {
-            return res.status(404).json({ error: "Entity not found" });
-        }
-
-        res.json({ message: "Entity updated successfully" });
-    } catch (error) {
-        console.error("Error updating entity:", error);
-        res.status(500).json({ error: "Failed to update entity" });
-    }
-});
-
-// DELETE - Delete entity
-app.delete("/api/entities/:id", async (req, res) => {
-    try {
-        if (!db) {
-            return res.status(500).json({ error: "Database connection not established" });
-        }
-
-        const { id } = req.params;
-        const result = await db.collection("entities").deleteOne({ _id: new ObjectId(id) });
-
-        if (!result.deletedCount) {
-            return res.status(404).json({ error: "Entity not found" });
-        }
-
-        res.json({ message: "Entity deleted successfully" });
-    } catch (error) {
-        console.error("Error deleting entity:", error);
-        res.status(500).json({ error: "Failed to delete entity" });
-    }
-});
-
-// Graceful shutdown
-process.on("SIGINT", async () => {
-    console.log("Closing MongoDB connection...");
-    if (client) await client.close();
-    process.exit(0);
 });
 
 app.listen(PORT, () => {
