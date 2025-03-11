@@ -88,18 +88,106 @@ app.post("/api/login", async (req, res) => {
     }
 });
 
-// Fetch Entities (Fixed)
+// Entity Routes
 app.get("/api/entities", async (req, res) => {
     try {
+        const userId = req.query.userId;
+        if (!userId) {
+            return res.status(400).json({ error: "User ID is required" });
+        }
+
         if (!mongoose.connection.readyState) {
             return res.status(500).json({ error: "Database connection not established" });
         }
 
-        const entities = await Entity.find(); // ✅ Use Mongoose model instead of db.collection()
+        const entities = await Entity.find({ createdBy: userId });
         res.json(entities);
     } catch (error) {
         console.error("Error fetching entities:", error);
         res.status(500).json({ error: "Failed to fetch entities" });
+    }
+});
+
+// Add new entity
+app.post("/api/entities", async (req, res) => {
+    try {
+        const { name, description, category, img, userId } = req.body;
+        
+        if (!userId) {
+            return res.status(400).json({ error: "User ID is required" });
+        }
+
+        // Create new entity
+        const entity = new Entity({
+            name,
+            description,
+            category,
+            img,
+            createdBy: userId
+        });
+
+        await entity.save();
+        res.status(201).json(entity);
+    } catch (error) {
+        console.error("Error creating entity:", error);
+        res.status(500).json({ error: "Failed to create entity" });
+    }
+});
+
+// Update entity
+app.put("/api/entities/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const { name, description, category, img, userId } = req.body;
+
+        const entity = await Entity.findById(id);
+        if (!entity) {
+            return res.status(404).json({ error: "Entity not found" });
+        }
+
+        // Check if the entity belongs to the user
+        if (entity.createdBy.toString() !== userId) {
+            return res.status(403).json({ error: "Not authorized to update this entity" });
+        }
+
+        const updatedEntity = await Entity.findByIdAndUpdate(
+            id,
+            { name, description, category, img },
+            { new: true }
+        );
+
+        res.json(updatedEntity);
+    } catch (error) {
+        console.error("Error updating entity:", error);
+        res.status(500).json({ error: "Failed to update entity" });
+    }
+});
+
+// Delete entity
+app.delete("/api/entities/:id", async (req, res) => {
+    try {
+        const { id } = req.params;
+        const userId = req.query.userId;
+
+        if (!userId) {
+            return res.status(400).json({ error: "User ID is required" });
+        }
+
+        const entity = await Entity.findById(id);
+        if (!entity) {
+            return res.status(404).json({ error: "Entity not found" });
+        }
+
+        // Check if the entity belongs to the user
+        if (entity.createdBy.toString() !== userId) {
+            return res.status(403).json({ error: "Not authorized to delete this entity" });
+        }
+
+        await Entity.findByIdAndDelete(id);
+        res.json({ message: "Entity deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting entity:", error);
+        res.status(500).json({ error: "Failed to delete entity" });
     }
 });
 

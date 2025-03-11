@@ -25,24 +25,6 @@ const LandingPage = () => {
       {isAuthenticated ? (
         <div>
           <header className="header">
-            <div style={{ display: 'flex', justifyContent: 'flex-end', padding: '1rem' }}>
-              <button
-                onClick={handleLogout}
-                style={{
-                  padding: '0.5rem 1rem',
-                  backgroundColor: '#f44336',
-                  color: 'white',
-                  border: 'none',
-                  borderRadius: '4px',
-                  cursor: 'pointer',
-                  transition: 'background-color 0.3s'
-                }}
-                onMouseOver={(e) => e.target.style.backgroundColor = '#d32f2f'}
-                onMouseOut={(e) => e.target.style.backgroundColor = '#f44336'}
-              >
-                Logout
-              </button>
-            </div>
             <h1> Tempting but Inedible(ASAP) </h1>
             <p className="subtitle">
               Welcome to a world where beauty meets deception. Discover our collection of 
@@ -57,7 +39,35 @@ const LandingPage = () => {
           </main>
       
           <footer>
-            <p>Remember: Beauty can be deceiving. Admire with your eyes, not with your appetite! </p>
+            <p>Remember: Beauty can be deceiving. Admire with your eyes, not with your appetite!</p>
+            <button
+              onClick={handleLogout}
+              style={{
+                padding: '0.8rem 2rem',
+                backgroundColor: '#f44336',
+                color: 'white',
+                border: 'none',
+                borderRadius: '8px',
+                cursor: 'pointer',
+                transition: 'all 0.3s ease',
+                marginTop: '2rem',
+                fontSize: '1rem',
+                fontWeight: '500',
+                boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
+              }}
+              onMouseOver={(e) => {
+                e.target.style.backgroundColor = '#d32f2f';
+                e.target.style.transform = 'translateY(-2px)';
+                e.target.style.boxShadow = '0 4px 8px rgba(0,0,0,0.3)';
+              }}
+              onMouseOut={(e) => {
+                e.target.style.backgroundColor = '#f44336';
+                e.target.style.transform = 'translateY(0)';
+                e.target.style.boxShadow = '0 2px 4px rgba(0,0,0,0.2)';
+              }}
+            >
+              Logout
+            </button>
           </footer>
         </div>
       ) : (

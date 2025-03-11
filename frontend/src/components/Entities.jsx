@@ -6,10 +6,20 @@ const Entities = () => {
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
     const [editingEntity, setEditingEntity] = useState(null);
+    const [user, setUser] = useState(null);
+
+    useEffect(() => {
+        const userStr = localStorage.getItem('user');
+        if (userStr) {
+            setUser(JSON.parse(userStr));
+        }
+    }, []);
 
     const fetchEntities = async () => {
+        if (!user) return;
+        
         try {
-            const response = await fetch("http://localhost:3000/api/entities");
+            const response = await fetch(`http://localhost:3000/api/entities?userId=${user.id}`);
             if (!response.ok) {
                 throw new Error("Failed to fetch data");
             }
@@ -24,8 +34,10 @@ const Entities = () => {
     };
 
     useEffect(() => {
-        fetchEntities();
-    }, []);
+        if (user) {
+            fetchEntities();
+        }
+    }, [user]);
 
     const handleEntityAdded = () => {
         fetchEntities();
@@ -37,7 +49,7 @@ const Entities = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:3000/api/entities/${id}`, {
+            const response = await fetch(`http://localhost:3000/api/entities/${id}?userId=${user.id}`, {
                 method: 'DELETE',
             });
 
@@ -63,7 +75,7 @@ const Entities = () => {
                 headers: {
                     'Content-Type': 'application/json',
                 },
-                body: JSON.stringify(updatedData),
+                body: JSON.stringify({ ...updatedData, userId: user.id }),
             });
 
             if (!response.ok) {
@@ -78,6 +90,7 @@ const Entities = () => {
         }
     };
 
+    if (!user) return <p>Please log in to view your collection.</p>;
     if (loading) return <p>Loading...</p>;
     if (error) return <p>Error: {error}</p>;
 
@@ -88,9 +101,10 @@ const Entities = () => {
                 editingEntity={editingEntity}
                 onUpdate={handleUpdate}
                 onCancel={() => setEditingEntity(null)}
+                userId={user.id}
             />
             
-            <h2 style={{ marginTop: '30px' }}>Current Inedible Items</h2>
+            <h2 style={{ marginTop: '30px' }}>Your Inedible Collection</h2>
             <div style={{ 
                 display: 'grid', 
                 gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
@@ -168,7 +182,7 @@ const Entities = () => {
                         </div>
                     ))
                 ) : (
-                    <p>No items found. Add some inedible items!</p>
+                    <p>No items found in your collection. Add some inedible items!</p>
                 )}
             </div>
         </div>

@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 
-const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel }) => {
+const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel, userId }) => {
     const [formData, setFormData] = useState({
         name: '',
         description: '',
@@ -37,7 +37,8 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel }) => 
         
         const submissionData = {
             ...formData,
-            category: formData.category === 'others' ? formData.customCategory : formData.category
+            category: formData.category === 'others' ? formData.customCategory : formData.category,
+            userId
         };
         
         try {
