@@ -1,7 +1,14 @@
 import React from 'react';
 import styled from 'styled-components';
+import { useNavigate } from 'react-router-dom';
 
 const AuthPage = () => {
+  const navigate = useNavigate();
+
+  const handleLoginClick = () => {
+    navigate('/login');
+  };
+
   return (
     <StyledWrapper>
       <div className="card">
@@ -19,23 +26,56 @@ const AuthPage = () => {
           <span>Password</span>
         </div>
         <button className="enter">Enter</button>
+        <div className="login-section">
+          <p className="login-text">Already have an account?</p>
+          <button onClick={handleLoginClick} className="login-button">Login</button>
+        </div>
       </div>
     </StyledWrapper>
   );
 };
 
 const StyledWrapper = styled.div`
-  /* Remove default body margins */
   margin: 0;
   padding: 0;
   overflow: hidden;
 
-  /* Center the card on the page */
   display: flex;
   justify-content: center;
   align-items: center;
   min-height: 100vh;
   background-color: transparent;
+
+  .login-section {
+    margin-top: 15px;
+    text-align: center;
+    width: 100%;
+  }
+
+  .login-text {
+    color: #000;
+    font-size: 0.8rem;
+    margin-bottom: 8px;
+  }
+
+  .login-button {
+    height: 30px;
+    width: 70px;
+    border-radius: 4px;
+    border: 2px solid #000;
+    cursor: pointer;
+    background-color: transparent;
+    transition: 0.5s;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 1px;
+    margin: 0;
+  }
+
+  .login-button:hover {
+    background-color: #000;
+    color: #fff;
+  }
 
   .singup {
     color: #000;
@@ -51,17 +91,17 @@ const StyledWrapper = styled.div`
     flex-direction: column;
     align-items: center;
     gap: 15px;
-    width: 200px; /* Compact card width */
+    width: 200px;
     padding: 10px;
     background: #e3e3e3;
     border-radius: 8px;
-    margin: 0; /* Remove extra margins */
+    margin: 0;
   }
 
   .inputBox,
   .inputBox1 {
     position: relative;
-    width: 180px; /* Reduced input width */
+    width: 180px;
   }
 
   .inputBox input,
@@ -95,7 +135,6 @@ const StyledWrapper = styled.div`
     border-radius: 6px;
   }
 
-  /* Adjust span position when the input is valid/focused */
   .inputBox input:valid ~ span,
   .inputBox input:focus ~ span {
     transform: translateX(70px) translateY(-12px);
@@ -133,7 +172,7 @@ const StyledWrapper = styled.div`
     text-transform: uppercase;
     font-size: 0.7rem;
     letter-spacing: 1px;
-    margin: 0; /* Remove bottom margin */
+    margin: 0;
   }
 
   .enter:hover {
