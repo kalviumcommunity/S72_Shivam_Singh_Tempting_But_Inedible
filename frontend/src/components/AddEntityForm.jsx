@@ -42,12 +42,10 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel }) => 
         
         try {
             if (editingEntity) {
-                // Update existing entity
                 const response = await fetch(`http://localhost:3000/api/entities/${editingEntity._id}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
                     },
                     body: JSON.stringify(submissionData),
                 });
@@ -59,12 +57,10 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel }) => 
 
                 onUpdate && onUpdate(editingEntity._id, submissionData);
             } else {
-                // Create new entity
                 const response = await fetch('http://localhost:3000/api/entities', {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Accept': 'application/json'
                     },
                     body: JSON.stringify(submissionData),
                 });
@@ -75,11 +71,9 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel }) => 
                 }
 
                 const data = await response.json();
-                console.log('Entity created:', data);
                 onEntityAdded && onEntityAdded();
             }
             
-            // Reset form
             setFormData({
                 name: '',
                 description: '',
@@ -108,28 +102,14 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel }) => 
     };
 
     return (
-        <div style={{ 
-            maxWidth: '500px', 
-            margin: '20px auto',
-            padding: '20px',
-            backgroundColor: '#2a2a2a',
-            borderRadius: '8px'
-        }}>
-            <h2 style={{ color: '#fff', marginBottom: '20px' }}>
-                {editingEntity ? 'Edit Inedible Item' : 'Add New Inedible Item'}
-            </h2>
+        <div className="form-container">
+            <h2>{editingEntity ? 'Edit Inedible Item' : 'Add New Inedible Item'}</h2>
             {error && (
-                <div style={{
-                    padding: '10px',
-                    backgroundColor: '#ff4444',
-                    color: '#fff',
-                    borderRadius: '4px',
-                    marginBottom: '15px'
-                }}>
+                <div className="error-container">
                     {error}
                 </div>
             )}
-            <form onSubmit={handleSubmit} style={{ display: 'flex', flexDirection: 'column', gap: '15px' }}>
+            <form onSubmit={handleSubmit}>
                 <input
                     type="text"
                     name="name"
@@ -137,40 +117,21 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel }) => 
                     onChange={handleChange}
                     placeholder="Item Name"
                     required
-                    style={{
-                        padding: '8px',
-                        borderRadius: '4px',
-                        border: '1px solid #444',
-                        backgroundColor: '#1a1a1a',
-                        color: '#fff'
-                    }}
+                    className="form-input"
                 />
                 <textarea
                     name="description"
                     value={formData.description}
                     onChange={handleChange}
                     placeholder="Description"
-                    style={{
-                        padding: '8px',
-                        borderRadius: '4px',
-                        border: '1px solid #444',
-                        backgroundColor: '#1a1a1a',
-                        color: '#fff',
-                        minHeight: '100px'
-                    }}
+                    className="form-input"
                 />
                 <select
                     name="category"
                     value={formData.category}
                     onChange={handleChange}
                     required
-                    style={{
-                        padding: '8px',
-                        borderRadius: '4px',
-                        border: '1px solid #444',
-                        backgroundColor: '#1a1a1a',
-                        color: '#fff'
-                    }}
+                    className="form-input"
                 >
                     <option value="">Select Category</option>
                     {categories.map(cat => (
@@ -188,13 +149,7 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel }) => 
                         onChange={handleChange}
                         placeholder="Enter Custom Category"
                         required
-                        style={{
-                            padding: '8px',
-                            borderRadius: '4px',
-                            border: '1px solid #444',
-                            backgroundColor: '#1a1a1a',
-                            color: '#fff'
-                        }}
+                        className="form-input"
                     />
                 )}
                 
@@ -204,28 +159,13 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel }) => 
                     value={formData.img}
                     onChange={handleChange}
                     placeholder="Image URL"
-                    style={{
-                        padding: '8px',
-                        borderRadius: '4px',
-                        border: '1px solid #444',
-                        backgroundColor: '#1a1a1a',
-                        color: '#fff'
-                    }}
+                    className="form-input"
                 />
-                <div style={{ display: 'flex', gap: '10px' }}>
+                <div className="button-group">
                     <button
                         type="submit"
                         disabled={loading || (formData.category === 'others' && !formData.customCategory)}
-                        style={{
-                            padding: '10px',
-                            backgroundColor: loading ? '#4a4a4a' : '#646cff',
-                            color: '#fff',
-                            border: 'none',
-                            borderRadius: '4px',
-                            cursor: loading ? 'not-allowed' : 'pointer',
-                            fontSize: '16px',
-                            flex: 1
-                        }}
+                        className="submit-button"
                     >
                         {loading ? 'Processing...' : (editingEntity ? 'Update Item' : 'Add Item')}
                     </button>
@@ -233,16 +173,7 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel }) => 
                         <button
                             type="button"
                             onClick={onCancel}
-                            style={{
-                                padding: '10px',
-                                backgroundColor: '#666',
-                                color: '#fff',
-                                border: 'none',
-                                borderRadius: '4px',
-                                cursor: 'pointer',
-                                fontSize: '16px',
-                                flex: 1
-                            }}
+                            className="button"
                         >
                             Cancel
                         </button>
