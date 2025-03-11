@@ -1,6 +1,6 @@
 const express = require("express");
 const dotenv = require("dotenv");
-const { MongoClient } = require("mongodb");
+const { MongoClient, ObjectId } = require("mongodb");
 const cors = require("cors");
 
 dotenv.config();
@@ -26,7 +26,7 @@ async function connectDB() {
     try {
         client = new MongoClient(mongoURI);
         await client.connect();
-        db = client.db("ASAP"); // Explicitly select the "ASAP" database
+        db = client.db("ASAP");
         console.log("✅ Connected to database: ASAP");
     } catch (error) {
         console.error("❌ MongoDB Connection Error:", error);
@@ -42,7 +42,7 @@ app.get("/", (req, res) => {
     res.json({ message: "Welcome!", database: db ? "Connected" : "Disconnected" });
 });
 
-// API route to fetch entities
+// GET - Read all entities
 app.get("/api/entities", async (req, res) => {
     try {
         if (!db) {
@@ -53,6 +53,106 @@ app.get("/api/entities", async (req, res) => {
     } catch (error) {
         console.error("Error fetching entities:", error);
         res.status(500).json({ error: "Failed to fetch entities" });
+    }
+});
+
+// POST - Create new entity
+app.post("/api/entities", async (req, res) => {
+    try {
+        if (!db) {
+            return res.status(500).json({ error: "Database connection not established" });
+        }
+        
+        const { name, description, category, img } = req.body;
+        
+        if (!name || !category) {
+            return res.status(400).json({ error: "Name and category are required" });
+        }
+
+        const newEntity = {
+            name,
+            description: description || "",
+            category,
+            img: img || "",
+            createdBy: "user",
+            createdAt: new Date()
+        };
+
+        const result = await db.collection("entities").insertOne(newEntity);
+        
+        if (!result.acknowledged) {
+            throw new Error("Insert operation not acknowledged");
+        }
+
+        res.status(201).json({
+            message: "Entity created successfully",
+            entity: { ...newEntity, _id: result.insertedId }
+        });
+    } catch (error) {
+        console.error("Error creating entity:", error);
+        res.status(500).json({
+            error: "Failed to create entity",
+            details: error.message
+        });
+    }
+});
+
+// PUT - Update entity
+app.put("/api/entities/:id", async (req, res) => {
+    try {
+        if (!db) {
+            return res.status(500).json({ error: "Database connection not established" });
+        }
+
+        const { id } = req.params;
+        const { name, description, category, img } = req.body;
+
+        if (!name || !category) {
+            return res.status(400).json({ error: "Name and category are required" });
+        }
+
+        const result = await db.collection("entities").updateOne(
+            { _id: new ObjectId(id) },
+            {
+                $set: {
+                    name,
+                    description: description || "",
+                    category,
+                    img: img || "",
+                    updatedAt: new Date()
+                }
+            }
+        );
+
+        if (!result.matchedCount) {
+            return res.status(404).json({ error: "Entity not found" });
+        }
+
+        res.json({ message: "Entity updated successfully" });
+    } catch (error) {
+        console.error("Error updating entity:", error);
+        res.status(500).json({ error: "Failed to update entity" });
+    }
+});
+
+// DELETE - Delete entity
+app.delete("/api/entities/:id", async (req, res) => {
+    try {
+        if (!db) {
+            return res.status(500).json({ error: "Database connection not established" });
+        }
+
+        const { id } = req.params;
+        const result = await db.collection("entities").deleteOne({ _id: new ObjectId(id) });
+
+        if (!result.deletedCount) {
+            return res.status(404).json({ error: "Entity not found" });
+        }
+
+        res.json({ message: "Entity deleted successfully" });
+    } catch (error) {
+        console.error("Error deleting entity:", error);
+        res.status(500).json({ error: "Failed to delete entity" });
     }
 });
 
