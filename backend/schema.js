@@ -21,7 +21,7 @@ const entitySchema = new mongoose.Schema({
   description: { type: String },
   img: { type: String },
   category: { type: String, required: true },
-  createdBy: { type: String, required: true },
+  createdBy: { type: mongoose.Schema.Types.ObjectId, ref: 'User', required: true },
   likes: [{ type: String }] // Array of user IDs who liked the entity
 }, { timestamps: true });
 

@@ -16,8 +16,8 @@ const Navbar = () => {
       <NavBrand>Tempting but Inedible</NavBrand>
       <NavLinks>
         <NavLink to="/home">Home</NavLink>
-        <NavLink to="/collection">Collection</NavLink>
         <NavLink to="/explore">Explore</NavLink>
+        <NavLink to="/collection">Collection</NavLink>
       </NavLinks>
       <LogoutButton onClick={handleLogout}>
         Logout

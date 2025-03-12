@@ -77,7 +77,10 @@ app.post("/api/login", async (req, res) => {
 // Get all entities for explore page
 app.get("/api/entities/all", async (req, res) => {
     try {
-        const entities = await Entity.find().populate('likes');
+        const entities = await Entity.find().populate({
+            path: 'createdBy',
+            select: 'username email -_id'
+        });
         res.json(entities);
     } catch (error) {
         console.error("Error fetching all entities:", error);
@@ -92,7 +95,10 @@ app.get("/api/entities", async (req, res) => {
         if (!userId) {
             return res.status(400).json({ error: "User ID is required" });
         }
-        const entities = await Entity.find({ createdBy: userId });
+        const entities = await Entity.find({ createdBy: userId }).populate({
+            path: 'createdBy',
+            select: 'username email -_id'
+        });
         res.json(entities);
     } catch (error) {
         console.error("Error fetching entities:", error);
@@ -145,7 +151,11 @@ app.post("/api/entities", async (req, res) => {
             likes: []
         });
         await entity.save();
-        res.status(201).json(entity);
+        const populatedEntity = await Entity.findById(entity._id).populate({
+            path: 'createdBy',
+            select: 'username email -_id'
+        });
+        res.status(201).json(populatedEntity);
     } catch (error) {
         console.error("Error creating entity:", error);
         res.status(500).json({ error: "Failed to create entity" });
@@ -168,7 +178,10 @@ app.put("/api/entities/:id", async (req, res) => {
             id,
             { name, description, category, img },
             { new: true }
-        );
+        ).populate({
+            path: 'createdBy',
+            select: 'username email -_id'
+        });
         res.json(updatedEntity);
     } catch (error) {
         console.error("Error updating entity:", error);

@@ -60,6 +60,9 @@ const ExplorePage = () => {
   return (
     <ExploreContainer>
       <Title>Explore All Collections</Title>
+      <Introduction>
+        <p>Welcome to our community showcase! Here you'll find an amazing collection of visually deceiving items from creators around the world. Each piece tells a story of artistic creativity and playful deception. Browse through the collection, show your appreciation with likes, and discover the fascinating world of inedible art.</p>
+      </Introduction>
       <CollectionsGrid>
         {allCollections.map((item) => (
           <CollectionCard key={item._id}>
@@ -70,7 +73,7 @@ const ExplorePage = () => {
               <ItemName>{item.name}</ItemName>
               <ItemDescription>{item.description}</ItemDescription>
               <CategoryTag>{item.category}</CategoryTag>
-              <CreatorInfo>Added by: {item.createdBy}</CreatorInfo>
+              <CreatorInfo>Added by: {item.createdBy.username || item.createdBy}</CreatorInfo>
               <LikeSection>
                 <LikeButton 
                   onClick={() => handleLike(item._id)}
@@ -102,10 +105,26 @@ const Title = styled.h1`
   font-size: 2.5rem;
   color: #fff;
   text-align: center;
-  margin-bottom: 2rem;
+  margin-bottom: 1.5rem;
   background: linear-gradient(45deg, #646cff, #ff6b6b);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+`;
+
+const Introduction = styled.div`
+  text-align: center;
+  max-width: 800px;
+  margin: 0 auto 3rem;
+  padding: 1.5rem;
+  background: rgba(255, 255, 255, 0.05);
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.1);
+
+  p {
+    color: rgba(255, 255, 255, 0.8);
+    line-height: 1.8;
+    font-size: 1.1rem;
+  }
 `;
 
 const CollectionsGrid = styled.div`
@@ -162,6 +181,7 @@ const CreatorInfo = styled.p`
   color: rgba(255, 255, 255, 0.5);
   font-size: 0.9rem;
   margin-bottom: 1rem;
+  font-style: italic;
 `;
 
 const LikeSection = styled.div`
