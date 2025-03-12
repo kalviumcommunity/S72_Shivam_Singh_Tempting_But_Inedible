@@ -34,18 +34,15 @@ const Login = () => {
         throw new Error(data.error || 'Login failed');
       }
 
-      // Store user data in localStorage
       localStorage.setItem('user', JSON.stringify(data.user));
-      
-      // Navigate to home page
-      navigate('/');
+      navigate('/collection');
     } catch (err) {
       setError(err.message);
     }
   };
 
   const handleSignupClick = () => {
-    navigate('/');
+    navigate('/signup');
   };
 
   return (

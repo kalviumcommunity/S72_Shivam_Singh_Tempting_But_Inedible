@@ -4,7 +4,6 @@ import styled from 'styled-components';
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const user = JSON.parse(localStorage.getItem('user'));
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -15,15 +14,12 @@ const Navbar = () => {
     <NavContainer>
       <NavBrand>Tempting but Inedible</NavBrand>
       <NavLinks>
-        <NavLink to="/">Home</NavLink>
+        <NavLink to="/collection">Home</NavLink>
         <NavLink to="/explore">Explore</NavLink>
-        <NavLink to="/collection">My Collection</NavLink>
       </NavLinks>
-      {user && (
-        <LogoutButton onClick={handleLogout}>
-          Logout
-        </LogoutButton>
-      )}
+      <LogoutButton onClick={handleLogout}>
+        Logout
+      </LogoutButton>
     </NavContainer>
   );
 };
