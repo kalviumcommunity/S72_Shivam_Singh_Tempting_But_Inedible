@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import AddEntityForm from "./AddEntityForm";
 import styled from 'styled-components';
+import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 
 const Entities = () => {
     const [entities, setEntities] = useState([]);
@@ -15,6 +16,14 @@ const Entities = () => {
             setUser(JSON.parse(userStr));
         }
     }, []);
+
+    const getPositiveMessage = (likeCount) => {
+        if (likeCount === 0) return "Share this with the community!";
+        if (likeCount === 1) return "Someone loves your creation!";
+        if (likeCount < 5) return "Your creation is getting noticed!";
+        if (likeCount < 10) return "People are loving your work!";
+        return "Your creation is a community favorite! 🌟";
+    };
 
     const fetchEntities = async () => {
         if (!user) return;
@@ -127,6 +136,19 @@ const Entities = () => {
                                 <ItemName>{entity.name}</ItemName>
                                 <ItemDescription>{entity.description}</ItemDescription>
                                 <CategoryTag>{entity.category}</CategoryTag>
+                                
+                                <LikesSection>
+                                    <LikeCount>
+                                        <HeartIcon>
+                                            <AiFillHeart color="#ff6b6b" />
+                                        </HeartIcon>
+                                        {entity.likes?.length || 0} likes
+                                    </LikeCount>
+                                    <PositiveMessage>
+                                        {getPositiveMessage(entity.likes?.length || 0)}
+                                    </PositiveMessage>
+                                </LikesSection>
+
                                 <ButtonGroup>
                                     <EditButton onClick={() => handleEdit(entity)}>
                                         Edit
@@ -227,9 +249,39 @@ const CategoryTag = styled.span`
     margin-bottom: 1rem;
 `;
 
+const LikesSection = styled.div`
+    background: rgba(255, 255, 255, 0.05);
+    padding: 1rem;
+    border-radius: 12px;
+    margin: 1rem 0;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+`;
+
+const LikeCount = styled.div`
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 500;
+    margin-bottom: 0.5rem;
+`;
+
+const HeartIcon = styled.span`
+    display: flex;
+    align-items: center;
+`;
+
+const PositiveMessage = styled.p`
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 0.9rem;
+    font-style: italic;
+    margin: 0;
+`;
+
 const ButtonGroup = styled.div`
     display: flex;
     gap: 1rem;
+    margin-top: 1rem;
 `;
 
 const Button = styled.button`
