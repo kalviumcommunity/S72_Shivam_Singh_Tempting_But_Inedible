@@ -1,19 +1,23 @@
 import React, { useState, useEffect } from 'react';
 import styled from 'styled-components';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
+import { useNavigate } from 'react-router-dom';
 
 const ExplorePage = () => {
   const [allCollections, setAllCollections] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentUser, setCurrentUser] = useState(null);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const userStr = localStorage.getItem('user');
-    if (userStr) {
-      setCurrentUser(JSON.parse(userStr));
+    if (!userStr) {
+      navigate('/login');
+      return;
     }
+    setCurrentUser(JSON.parse(userStr));
     fetchAllCollections();
-  }, []);
+  }, [navigate]);
 
   const fetchAllCollections = async () => {
     try {
@@ -30,7 +34,7 @@ const ExplorePage = () => {
 
   const handleLike = async (entityId) => {
     if (!currentUser) {
-      alert('Please login to like items');
+      navigate('/login');
       return;
     }
 

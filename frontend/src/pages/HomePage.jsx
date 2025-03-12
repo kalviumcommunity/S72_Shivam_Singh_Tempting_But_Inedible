@@ -1,7 +1,10 @@
 import React from 'react';
+import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
 const HomePage = () => {
+  const navigate = useNavigate();
+
   return (
     <HomeContainer>
       <Header>
@@ -13,6 +16,11 @@ const HomePage = () => {
         </Subtitle>
       </Header>
       
+      <ButtonContainer>
+        <AuthButton onClick={() => navigate('/login')}>Login</AuthButton>
+        <AuthButton onClick={() => navigate('/')}>Sign Up</AuthButton>
+      </ButtonContainer>
+
       <FeaturesGrid>
         <FeatureCard>
           <h3>Create Your Collection</h3>
@@ -57,12 +65,38 @@ const Subtitle = styled.p`
   line-height: 1.6;
 `;
 
+const ButtonContainer = styled.div`
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+  margin: 3rem 0;
+`;
+
+const AuthButton = styled.button`
+  padding: 1rem 2.5rem;
+  font-size: 1.1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: linear-gradient(45deg, #646cff, #ff6b6b);
+  color: white;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 5px 15px rgba(100, 108, 255, 0.4);
+  }
+`;
+
 const FeaturesGrid = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
   gap: 2rem;
   max-width: 1200px;
-  margin: 0 auto;
+  margin: 4rem auto 0;
 `;
 
 const FeatureCard = styled.div`
@@ -81,10 +115,12 @@ const FeatureCard = styled.div`
   h3 {
     color: #646cff;
     margin-bottom: 1rem;
+    font-size: 1.5rem;
   }
 
   p {
     color: rgba(255, 255, 255, 0.7);
+    line-height: 1.6;
   }
 `;
 
