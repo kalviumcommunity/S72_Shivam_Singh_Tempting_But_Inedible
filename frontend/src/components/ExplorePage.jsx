@@ -49,7 +49,6 @@ const ExplorePage = () => {
 
       if (!response.ok) throw new Error('Failed to like item');
       
-      // Update the collections to reflect the new like
       fetchAllCollections();
     } catch (error) {
       console.error('Error liking item:', error);
@@ -94,7 +93,7 @@ const ExplorePage = () => {
 };
 
 const ExploreContainer = styled.div`
-  padding: 2rem;
+  padding: 7rem 2rem 2rem;
   max-width: 1400px;
   margin: 0 auto;
 `;

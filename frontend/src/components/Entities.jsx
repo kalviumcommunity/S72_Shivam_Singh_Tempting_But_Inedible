@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import AddEntityForm from "./AddEntityForm";
+import styled from 'styled-components';
 
 const Entities = () => {
     const [entities, setEntities] = useState([]);
@@ -90,103 +91,194 @@ const Entities = () => {
         }
     };
 
-    if (!user) return <p>Please log in to view your collection.</p>;
-    if (loading) return <p>Loading...</p>;
-    if (error) return <p>Error: {error}</p>;
+    if (!user) return <StyledMessage>Please log in to view your collection.</StyledMessage>;
+    if (loading) return <StyledMessage>Loading...</StyledMessage>;
+    if (error) return <StyledMessage>Error: {error}</StyledMessage>;
 
     return (
-        <div>
-            <AddEntityForm 
-                onEntityAdded={handleEntityAdded}
-                editingEntity={editingEntity}
-                onUpdate={handleUpdate}
-                onCancel={() => setEditingEntity(null)}
-                userId={user.id}
-            />
+        <Container>
+            <Header>
+                <Title>Your Inedible Collection</Title>
+                <Description>
+                    Welcome to your personal collection of visually deceiving items. 
+                    Here you can add, edit, and manage your fascinating collection of objects 
+                    that look delicious but are completely inedible.
+                </Description>
+            </Header>
             
-            <h2 style={{ marginTop: '30px' }}>Your Inedible Collection</h2>
-            <div style={{ 
-                display: 'grid', 
-                gridTemplateColumns: 'repeat(auto-fill, minmax(250px, 1fr))',
-                gap: '20px',
-                padding: '20px'
-            }}>
+            <FormSection>
+                <AddEntityForm 
+                    onEntityAdded={handleEntityAdded}
+                    editingEntity={editingEntity}
+                    onUpdate={handleUpdate}
+                    onCancel={() => setEditingEntity(null)}
+                    userId={user.id}
+                />
+            </FormSection>
+            
+            <CollectionGrid>
                 {entities.length > 0 ? (
                     entities.map((entity) => (
-                        <div key={entity._id} style={{
-                            backgroundColor: '#2a2a2a',
-                            padding: '15px',
-                            borderRadius: '8px',
-                            boxShadow: '0 2px 4px rgba(0,0,0,0.2)'
-                        }}>
+                        <ItemCard key={entity._id}>
                             {entity.img && (
-                                <img 
-                                    src={entity.img} 
-                                    alt={entity.name}
-                                    style={{
-                                        width: '100%',
-                                        height: '200px',
-                                        objectFit: 'cover',
-                                        borderRadius: '4px',
-                                        marginBottom: '10px'
-                                    }}
-                                />
+                                <ItemImage src={entity.img} alt={entity.name} />
                             )}
-                            <h3 style={{ color: '#fff', marginBottom: '5px' }}>{entity.name}</h3>
-                            <p style={{ color: '#ccc', fontSize: '0.9em', marginBottom: '5px' }}>{entity.description}</p>
-                            <span style={{ 
-                                backgroundColor: '#646cff',
-                                color: '#fff',
-                                padding: '3px 8px',
-                                borderRadius: '12px',
-                                fontSize: '0.8em',
-                                marginBottom: '10px',
-                                display: 'inline-block'
-                            }}>
-                                {entity.category}
-                            </span>
-                            <div style={{ 
-                                display: 'flex', 
-                                gap: '10px', 
-                                marginTop: '10px'
-                            }}>
-                                <button
-                                    onClick={() => handleEdit(entity)}
-                                    style={{
-                                        backgroundColor: '#4CAF50',
-                                        color: 'white',
-                                        border: 'none',
-                                        padding: '5px 10px',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                        flex: 1
-                                    }}
-                                >
-                                    Edit
-                                </button>
-                                <button
-                                    onClick={() => handleDelete(entity._id)}
-                                    style={{
-                                        backgroundColor: '#f44336',
-                                        color: 'white',
-                                        border: 'none',
-                                        padding: '5px 10px',
-                                        borderRadius: '4px',
-                                        cursor: 'pointer',
-                                        flex: 1
-                                    }}
-                                >
-                                    Delete
-                                </button>
-                            </div>
-                        </div>
+                            <ItemContent>
+                                <ItemName>{entity.name}</ItemName>
+                                <ItemDescription>{entity.description}</ItemDescription>
+                                <CategoryTag>{entity.category}</CategoryTag>
+                                <ButtonGroup>
+                                    <EditButton onClick={() => handleEdit(entity)}>
+                                        Edit
+                                    </EditButton>
+                                    <DeleteButton onClick={() => handleDelete(entity._id)}>
+                                        Delete
+                                    </DeleteButton>
+                                </ButtonGroup>
+                            </ItemContent>
+                        </ItemCard>
                     ))
                 ) : (
-                    <p>No items found in your collection. Add some inedible items!</p>
+                    <EmptyMessage>No items found in your collection. Add some inedible items!</EmptyMessage>
                 )}
-            </div>
-        </div>
+            </CollectionGrid>
+        </Container>
     );
 };
+
+const Container = styled.div`
+    padding: 7rem 2rem 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+`;
+
+const Header = styled.div`
+    text-align: center;
+    margin-bottom: 3rem;
+`;
+
+const Title = styled.h1`
+    font-size: 2.5rem;
+    background: linear-gradient(45deg, #646cff, #ff6b6b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 1rem;
+`;
+
+const Description = styled.p`
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.1rem;
+    max-width: 800px;
+    margin: 0 auto;
+    line-height: 1.6;
+`;
+
+const FormSection = styled.div`
+    margin-bottom: 4rem;
+`;
+
+const CollectionGrid = styled.div`
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 2rem;
+`;
+
+const ItemCard = styled.div`
+    background: rgba(30, 30, 30, 0.6);
+    border-radius: 16px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+
+    &:hover {
+        transform: translateY(-5px);
+    }
+`;
+
+const ItemImage = styled.img`
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+`;
+
+const ItemContent = styled.div`
+    padding: 1.5rem;
+`;
+
+const ItemName = styled.h3`
+    font-size: 1.5rem;
+    color: #fff;
+    margin-bottom: 0.5rem;
+`;
+
+const ItemDescription = styled.p`
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1rem;
+    margin-bottom: 1rem;
+`;
+
+const CategoryTag = styled.span`
+    background: rgba(100, 108, 255, 0.2);
+    color: #646cff;
+    padding: 0.4rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    display: inline-block;
+    margin-bottom: 1rem;
+`;
+
+const ButtonGroup = styled.div`
+    display: flex;
+    gap: 1rem;
+`;
+
+const Button = styled.button`
+    flex: 1;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+`;
+
+const EditButton = styled(Button)`
+    background: rgba(76, 175, 80, 0.1);
+    color: #4CAF50;
+    border: 1px solid rgba(76, 175, 80, 0.2);
+
+    &:hover {
+        background: rgba(76, 175, 80, 0.2);
+        transform: translateY(-2px);
+    }
+`;
+
+const DeleteButton = styled(Button)`
+    background: rgba(244, 67, 54, 0.1);
+    color: #f44336;
+    border: 1px solid rgba(244, 67, 54, 0.2);
+
+    &:hover {
+        background: rgba(244, 67, 54, 0.2);
+        transform: translateY(-2px);
+    }
+`;
+
+const StyledMessage = styled.p`
+    text-align: center;
+    padding: 2rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.2rem;
+`;
+
+const EmptyMessage = styled.p`
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 2rem;
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.2rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 16px;
+`;
 
 export default Entities;

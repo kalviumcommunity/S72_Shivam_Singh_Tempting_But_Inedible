@@ -7,14 +7,16 @@ const Navbar = () => {
 
   const handleLogout = () => {
     localStorage.removeItem('user');
-    navigate('/login');
+    navigate('/', { replace: true });
+    window.location.reload();
   };
 
   return (
     <NavContainer>
       <NavBrand>Tempting but Inedible</NavBrand>
       <NavLinks>
-        <NavLink to="/collection">Home</NavLink>
+        <NavLink to="/home">Home</NavLink>
+        <NavLink to="/collection">Collection</NavLink>
         <NavLink to="/explore">Explore</NavLink>
       </NavLinks>
       <LogoutButton onClick={handleLogout}>
