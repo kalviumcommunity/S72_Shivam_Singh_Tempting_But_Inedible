@@ -11,6 +11,7 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel, userI
     const [error, setError] = useState('');
     const [loading, setLoading] = useState(false);
 
+    // Predefined categories for the form
     const categories = [
         { value: 'non-eatable', label: 'Non Eatable' },
         { value: 'non-drinkable', label: 'Non Drinkable' },
@@ -42,8 +43,11 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel, userI
         };
         
         try {
+            // Updated API endpoint to use Render backend
+            const baseUrl = 'https://s72-shivam-singh-tempting-but-inedible.onrender.com';
+            
             if (editingEntity) {
-                const response = await fetch(`http://localhost:3000/api/entities/${editingEntity._id}`, {
+                const response = await fetch(`${baseUrl}/api/entities/${editingEntity._id}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -58,7 +62,7 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel, userI
 
                 onUpdate && onUpdate(editingEntity._id, submissionData);
             } else {
-                const response = await fetch('http://localhost:3000/api/entities', {
+                const response = await fetch(`${baseUrl}/api/entities`, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
