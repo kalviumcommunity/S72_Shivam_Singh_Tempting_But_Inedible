@@ -2,6 +2,9 @@ import React, { useState } from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
 
+// Base URL for the backend API
+const BASE_URL = 'https://s72-shivam-singh-tempting-but-inedible.onrender.com';
+
 const AuthPage = () => {
   const navigate = useNavigate();
   const [formData, setFormData] = useState({
@@ -21,7 +24,8 @@ const AuthPage = () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const response = await fetch('http://localhost:3000/api/signup', {
+      // Updated API endpoint to use Render backend
+      const response = await fetch(`${BASE_URL}/api/signup`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
@@ -99,8 +103,6 @@ justify-content: center;
 align-items: center;
 background-color: transparent;
 padding-top: 160px;
-
-
 
   .login-section {
     margin-top: 15px;
@@ -238,4 +240,4 @@ padding-top: 160px;
   } 
 `;
 
-export default AuthPage; 
+export default AuthPage;
