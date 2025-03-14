@@ -3,6 +3,9 @@ import AddEntityForm from "./AddEntityForm";
 import styled from 'styled-components';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 
+// Base URL for the backend API
+const BASE_URL = 'https://s72-shivam-singh-tempting-but-inedible.onrender.com';
+
 const Entities = () => {
     const [entities, setEntities] = useState([]);
     const [loading, setLoading] = useState(true);
@@ -29,7 +32,8 @@ const Entities = () => {
         if (!user) return;
         
         try {
-            const response = await fetch(`http://localhost:3000/api/entities?userId=${user.id}`);
+            // Updated API endpoint to use Render backend
+            const response = await fetch(`${BASE_URL}/api/entities?userId=${user.id}`);
             if (!response.ok) {
                 throw new Error("Failed to fetch data");
             }
@@ -59,7 +63,8 @@ const Entities = () => {
         }
 
         try {
-            const response = await fetch(`http://localhost:3000/api/entities/${id}?userId=${user.id}`, {
+            // Updated API endpoint to use Render backend
+            const response = await fetch(`${BASE_URL}/api/entities/${id}?userId=${user.id}`, {
                 method: 'DELETE',
             });
 
@@ -80,7 +85,8 @@ const Entities = () => {
 
     const handleUpdate = async (id, updatedData) => {
         try {
-            const response = await fetch(`http://localhost:3000/api/entities/${id}`, {
+            // Updated API endpoint to use Render backend
+            const response = await fetch(`${BASE_URL}/api/entities/${id}`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',
