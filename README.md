@@ -70,5 +70,9 @@ https://s72-shivam-singh-tempting-but-inedible.onrender.com
 
 https://5e31112c.asap-62r.pages.dev/
 
+**Fully functional Deployed link**
+
+https://asap-shivam.netlify.app/
+
 
 **To  run the project just type in terminal **npm start****
