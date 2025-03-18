@@ -3,6 +3,9 @@ import styled from 'styled-components';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
 import { useNavigate } from 'react-router-dom';
 
+// Base URL for the backend API
+const BASE_URL = 'https://s72-shivam-singh-tempting-but-inedible.onrender.com';
+
 const ExplorePage = () => {
   const [allCollections, setAllCollections] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -21,7 +24,8 @@ const ExplorePage = () => {
 
   const fetchAllCollections = async () => {
     try {
-      const response = await fetch('http://localhost:3000/api/entities/all');
+      // Updated API endpoint to use Render backend
+      const response = await fetch(`${BASE_URL}/api/entities/all`);
       if (!response.ok) throw new Error('Failed to fetch collections');
       const data = await response.json();
       setAllCollections(data);
@@ -39,7 +43,8 @@ const ExplorePage = () => {
     }
 
     try {
-      const response = await fetch(`http://localhost:3000/api/entities/${entityId}/like`, {
+      // Updated API endpoint to use Render backend
+      const response = await fetch(`${BASE_URL}/api/entities/${entityId}/like`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
