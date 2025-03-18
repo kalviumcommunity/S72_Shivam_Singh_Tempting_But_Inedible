@@ -30,9 +30,26 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel, userI
         }
     }, [editingEntity]);
 
+    // Function to validate form inputs
+    const validateForm = () => {
+        if (!formData.name.trim()) return 'Item Name is required.';
+        if (!formData.category) return 'Category is required.';
+        if (formData.category === 'others' && !formData.customCategory.trim()) return 'Custom category is required.';
+        if (formData.img && !/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/.test(formData.img)) return 'Enter a valid image URL (jpg, png, gif, webp).';
+        return '';
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setError('');
+        
+        // Perform validation before submission
+        const validationError = validateForm();
+        if (validationError) {
+            setError(validationError);
+            return;
+        }
+        
         setLoading(true);
         
         const submissionData = {
@@ -55,7 +72,6 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel, userI
                     const errorData = await response.json();
                     throw new Error(errorData.error || 'Failed to update entity');
                 }
-
                 onUpdate && onUpdate(editingEntity._id, submissionData);
             } else {
                 const response = await fetch('http://localhost:3000/api/entities', {
@@ -71,10 +87,10 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel, userI
                     throw new Error(errorData.error || 'Failed to create entity');
                 }
 
-                const data = await response.json();
                 onEntityAdded && onEntityAdded();
             }
             
+            // Reset form after successful submission
             setFormData({
                 name: '',
                 description: '',
@@ -82,7 +98,7 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel, userI
                 customCategory: '',
                 img: ''
             });
-
+            
             if (editingEntity) {
                 onCancel();
             }
@@ -105,11 +121,7 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel, userI
     return (
         <div className="form-container">
             <h2>{editingEntity ? 'Edit Inedible Item' : 'Add New Inedible Item'}</h2>
-            {error && (
-                <div className="error-container">
-                    {error}
-                </div>
-            )}
+            {error && <div className="error-container">{error}</div>}
             <form onSubmit={handleSubmit}>
                 <input
                     type="text"
@@ -141,7 +153,6 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel, userI
                         </option>
                     ))}
                 </select>
-                
                 {formData.category === 'others' && (
                     <input
                         type="text"
@@ -153,7 +164,6 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel, userI
                         className="form-input"
                     />
                 )}
-                
                 <input
                     type="url"
                     name="img"
@@ -165,7 +175,7 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel, userI
                 <div className="button-group">
                     <button
                         type="submit"
-                        disabled={loading || (formData.category === 'others' && !formData.customCategory)}
+                        disabled={loading}
                         className="submit-button"
                     >
                         {loading ? 'Processing...' : (editingEntity ? 'Update Item' : 'Add Item')}
