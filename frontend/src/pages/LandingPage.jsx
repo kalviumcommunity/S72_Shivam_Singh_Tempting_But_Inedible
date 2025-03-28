@@ -2,7 +2,7 @@ import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import styled from 'styled-components';
 
-const LandingPage = () => {
+const LandingPage = ({ onGuestLogin }) => {
   const navigate = useNavigate();
 
   return (
@@ -53,6 +53,9 @@ const LandingPage = () => {
             </CTAButton>
             <CTAButton onClick={() => navigate('/signup')} variant="secondary">
               Sign Up
+            </CTAButton>
+            <CTAButton onClick={onGuestLogin} variant="guest">
+              Continue as Guest
             </CTAButton>
           </CTASection>
         </MainContent>
@@ -168,17 +171,24 @@ const CTAButton = styled.button`
   border-radius: 12px;
   cursor: pointer;
   transition: all 0.3s ease;
-  background: ${props => props.variant === 'secondary' 
-    ? 'rgba(100, 108, 255, 0.1)'
-    : 'linear-gradient(45deg, #646cff, #ff6b6b)'};
+  background: ${props => {
+    if (props.variant === 'secondary') return 'rgba(100, 108, 255, 0.1)';
+    if (props.variant === 'guest') return 'rgba(255, 255, 255, 0.1)';
+    return 'linear-gradient(45deg, #646cff, #ff6b6b)';
+  }};
   color: white;
-  border: ${props => props.variant === 'secondary'
-    ? '1px solid #646cff'
-    : 'none'};
+  border: ${props => {
+    if (props.variant === 'secondary') return '1px solid #646cff';
+    if (props.variant === 'guest') return '1px solid rgba(255, 255, 255, 0.2)';
+    return 'none';
+  }};
 
   &:hover {
     transform: translateY(-2px);
-    box-shadow: 0 7px 20px rgba(100, 108, 255, 0.4);
+    box-shadow: ${props => {
+      if (props.variant === 'guest') return '0 7px 20px rgba(255, 255, 255, 0.2)';
+      return '0 7px 20px rgba(100, 108, 255, 0.4)';
+    }};
   }
 `;
 

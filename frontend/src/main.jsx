@@ -10,7 +10,7 @@ import LandingPage from "./pages/LandingPage";
 import AuthPage from "./components/signup";
 import "./index.css";
 
-const AuthWrapper = ({ children }) => {
+const AuthWrapper = ({ children, requireAuth = false }) => {
   const isAuthenticated = () => {
     try {
       const user = JSON.parse(localStorage.getItem('user'));
@@ -20,8 +20,8 @@ const AuthWrapper = ({ children }) => {
     }
   };
 
-  if (!isAuthenticated()) {
-    return <Navigate to="/" replace />;
+  if (requireAuth && !isAuthenticated()) {
+    return <Navigate to="/login" replace />;
   }
 
   return (
@@ -42,6 +42,17 @@ const App = () => {
     }
   };
 
+  const handleGuestLogin = () => {
+    const guestUser = {
+      id: 'guest',
+      username: 'Guest User',
+      email: 'guest@example.com',
+      isGuest: true
+    };
+    localStorage.setItem('user', JSON.stringify(guestUser));
+    window.location.reload();
+  };
+
   return (
     <Router>
       <div className={`app-container ${isAuthenticated() ? 'authenticated' : ''}`}>
@@ -52,7 +63,7 @@ const App = () => {
               isAuthenticated() ? (
                 <Navigate to="/home" replace />
               ) : (
-                <LandingPage />
+                <LandingPage onGuestLogin={handleGuestLogin} />
               )
             } 
           />
@@ -95,7 +106,7 @@ const App = () => {
           <Route 
             path="/collection" 
             element={
-              <AuthWrapper>
+              <AuthWrapper requireAuth={true}>
                 <Entities />
               </AuthWrapper>
             } 

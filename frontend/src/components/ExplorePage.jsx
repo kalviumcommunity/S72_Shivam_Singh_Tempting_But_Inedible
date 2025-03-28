@@ -14,17 +14,14 @@ const ExplorePage = () => {
 
   useEffect(() => {
     const userStr = localStorage.getItem('user');
-    if (!userStr) {
-      navigate('/login');
-      return;
+    if (userStr) {
+      setCurrentUser(JSON.parse(userStr));
     }
-    setCurrentUser(JSON.parse(userStr));
     fetchAllCollections();
-  }, [navigate]);
+  }, []);
 
   const fetchAllCollections = async () => {
     try {
-      // Updated API endpoint to use Render backend
       const response = await fetch(`${BASE_URL}/api/entities/all`);
       if (!response.ok) throw new Error('Failed to fetch collections');
       const data = await response.json();
@@ -43,7 +40,6 @@ const ExplorePage = () => {
     }
 
     try {
-      // Updated API endpoint to use Render backend
       const response = await fetch(`${BASE_URL}/api/entities/${entityId}/like`, {
         method: 'POST',
         headers: {
@@ -63,84 +59,88 @@ const ExplorePage = () => {
   if (loading) return <LoadingMessage>Loading collections...</LoadingMessage>;
 
   return (
-    <ExploreContainer>
-      <Title>Explore All Collections</Title>
-      <Introduction>
-        <p>Welcome to our community showcase! Here you'll find an amazing collection of visually deceiving items from creators around the world. Each piece tells a story of artistic creativity and playful deception. Browse through the collection, show your appreciation with likes, and discover the fascinating world of inedible art.</p>
-      </Introduction>
-      <CollectionsGrid>
+    <Container>
+      <Header>
+        <Title>Explore Collections</Title>
+        <Description>
+          Discover amazing collections of visually deceiving items from our community.
+          {!currentUser && (
+            <GuestMessage>
+              Sign in to like items and create your own collection!
+            </GuestMessage>
+          )}
+        </Description>
+      </Header>
+      
+      <GridContainer>
         {allCollections.map((item) => (
-          <CollectionCard key={item._id}>
-            {item.img && (
-              <ItemImage src={item.img} alt={item.name} />
-            )}
-            <ItemContent>
-              <ItemName>{item.name}</ItemName>
-              <ItemDescription>{item.description}</ItemDescription>
-              <CategoryTag>{item.category}</CategoryTag>
-              <CreatorInfo>Added by: {item.createdBy.username || item.createdBy}</CreatorInfo>
-              <LikeSection>
-                <LikeButton 
-                  onClick={() => handleLike(item._id)}
-                  liked={item.likes?.includes(currentUser?.id)}
-                >
-                  {item.likes?.includes(currentUser?.id) ? (
-                    <AiFillHeart size={24} />
-                  ) : (
-                    <AiOutlineHeart size={24} />
-                  )}
-                </LikeButton>
-                <LikeCount>{item.likes?.length || 0} likes</LikeCount>
-              </LikeSection>
-            </ItemContent>
-          </CollectionCard>
+          <Card key={item._id}>
+            <ImageContainer>
+              <img src={item.img} alt={item.name} />
+            </ImageContainer>
+            <Content>
+              <Title>{item.name}</Title>
+              <Description>{item.description}</Description>
+              <Category>{item.category}</Category>
+              <LikeButton onClick={() => handleLike(item._id)}>
+                {item.likes.includes(currentUser?.id) ? (
+                  <AiFillHeart color="#ff6b6b" />
+                ) : (
+                  <AiOutlineHeart />
+                )}
+                <span>{item.likes.length}</span>
+              </LikeButton>
+            </Content>
+          </Card>
         ))}
-      </CollectionsGrid>
-    </ExploreContainer>
+      </GridContainer>
+    </Container>
   );
 };
 
-const ExploreContainer = styled.div`
-  padding: 7rem 2rem 2rem;
-  max-width: 1400px;
+const Container = styled.div`
+  padding: 2rem;
+  max-width: 1200px;
   margin: 0 auto;
+`;
+
+const Header = styled.header`
+  text-align: center;
+  margin-bottom: 3rem;
 `;
 
 const Title = styled.h1`
   font-size: 2.5rem;
-  color: #fff;
-  text-align: center;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
   background: linear-gradient(45deg, #646cff, #ff6b6b);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
 `;
 
-const Introduction = styled.div`
-  text-align: center;
-  max-width: 800px;
-  margin: 0 auto 3rem;
-  padding: 1.5rem;
-  background: rgba(255, 255, 255, 0.05);
-  border-radius: 16px;
-  border: 1px solid rgba(255, 255, 255, 0.1);
-
-  p {
-    color: rgba(255, 255, 255, 0.8);
-    line-height: 1.8;
-    font-size: 1.1rem;
-  }
+const Description = styled.p`
+  color: rgba(255, 255, 255, 0.7);
+  font-size: 1.1rem;
+  line-height: 1.6;
 `;
 
-const CollectionsGrid = styled.div`
+const GuestMessage = styled.div`
+  margin-top: 1rem;
+  padding: 0.5rem 1rem;
+  background: rgba(100, 108, 255, 0.1);
+  border-radius: 8px;
+  color: #646cff;
+  font-size: 0.9rem;
+`;
+
+const GridContainer = styled.div`
   display: grid;
   grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
   gap: 2rem;
 `;
 
-const CollectionCard = styled.div`
+const Card = styled.div`
   background: rgba(30, 30, 30, 0.6);
-  border-radius: 16px;
+  border-radius: 12px;
   overflow: hidden;
   transition: transform 0.3s ease;
   border: 1px solid rgba(255, 255, 255, 0.1);
@@ -150,66 +150,54 @@ const CollectionCard = styled.div`
   }
 `;
 
-const ItemImage = styled.img`
+const ImageContainer = styled.div`
   width: 100%;
   height: 200px;
-  object-fit: cover;
+  overflow: hidden;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
 `;
 
-const ItemContent = styled.div`
+const Content = styled.div`
   padding: 1.5rem;
 `;
 
-const ItemName = styled.h3`
-  font-size: 1.5rem;
-  color: #fff;
-  margin-bottom: 0.5rem;
-`;
-
-const ItemDescription = styled.p`
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 1rem;
-  margin-bottom: 1rem;
-`;
-
-const CategoryTag = styled.span`
-  background: rgba(100, 108, 255, 0.2);
-  color: #646cff;
-  padding: 0.4rem 1rem;
-  border-radius: 20px;
-  font-size: 0.9rem;
+const Category = styled.span`
   display: inline-block;
-  margin-bottom: 1rem;
-`;
-
-const CreatorInfo = styled.p`
-  color: rgba(255, 255, 255, 0.5);
-  font-size: 0.9rem;
-  margin-bottom: 1rem;
-  font-style: italic;
-`;
-
-const LikeSection = styled.div`
-  display: flex;
-  align-items: center;
-  gap: 0.5rem;
+  padding: 0.3rem 0.8rem;
+  background: rgba(100, 108, 255, 0.1);
+  color: #646cff;
+  border-radius: 20px;
+  font-size: 0.8rem;
+  margin: 0.5rem 0;
 `;
 
 const LikeButton = styled.button`
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
   background: none;
   border: none;
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
-  color: ${props => props.liked ? '#ff6b6b' : 'rgba(255, 255, 255, 0.7)'};
+  padding: 0.5rem;
   transition: color 0.3s ease;
 
   &:hover {
     color: #ff6b6b;
   }
-`;
 
-const LikeCount = styled.span`
-  color: rgba(255, 255, 255, 0.7);
-  font-size: 0.9rem;
+  svg {
+    font-size: 1.2rem;
+  }
+
+  span {
+    font-size: 0.9rem;
+  }
 `;
 
 const LoadingMessage = styled.div`

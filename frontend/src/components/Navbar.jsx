@@ -4,6 +4,15 @@ import styled from 'styled-components';
 
 const Navbar = () => {
   const navigate = useNavigate();
+  const isAuthenticated = () => {
+    try {
+      const user = JSON.parse(localStorage.getItem('user'));
+      // Return false for guest users or non-authenticated users
+      return user && user.id && !user.isGuest;
+    } catch {
+      return false;
+    }
+  };
 
   const handleLogout = () => {
     localStorage.removeItem('user');
@@ -11,17 +20,46 @@ const Navbar = () => {
     window.location.reload();
   };
 
+  const handleAuthAction = (action) => {
+    // If user is a guest, remove guest session and reload to clear state
+    const user = JSON.parse(localStorage.getItem('user') || '{}');
+    if (user.isGuest) {
+      localStorage.removeItem('user');
+      // Use setTimeout to ensure localStorage is cleared before navigation
+      setTimeout(() => {
+        window.location.href = action === 'signup' ? '/signup' : '/login';
+      }, 0);
+    } else {
+      // For non-guest users, just navigate
+      navigate(action === 'signup' ? '/signup' : '/login');
+    }
+  };
+
+  const user = JSON.parse(localStorage.getItem('user') || '{}');
+  const isGuest = user.isGuest;
+
   return (
     <NavContainer>
-      <NavBrand>Tempting but Inedible</NavBrand>
+      <NavBrand as={Link} to="/">Tempting but Inedible</NavBrand>
       <NavLinks>
         <NavLink to="/home">Home</NavLink>
         <NavLink to="/explore">Explore</NavLink>
-        <NavLink to="/collection">Collection</NavLink>
+        {isAuthenticated() && <NavLink to="/collection">Collection</NavLink>}
       </NavLinks>
-      <LogoutButton onClick={handleLogout}>
-        Logout
-      </LogoutButton>
+      {isAuthenticated() ? (
+        <LogoutButton onClick={handleLogout}>
+          Logout
+        </LogoutButton>
+      ) : (
+        <AuthButtons>
+          <LoginButton onClick={() => handleAuthAction('login')}>
+            {isGuest ? 'Switch to Login' : 'Login'}
+          </LoginButton>
+          <SignupButton onClick={() => handleAuthAction('signup')}>
+            {isGuest ? 'Create Account' : 'Sign Up'}
+          </SignupButton>
+        </AuthButtons>
+      )}
     </NavContainer>
   );
 };
@@ -48,6 +86,8 @@ const NavBrand = styled.h1`
   background: linear-gradient(45deg, #646cff, #ff6b6b);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
+  text-decoration: none;
+  cursor: pointer;
 `;
 
 const NavLinks = styled.div`
@@ -79,6 +119,41 @@ const NavLink = styled(Link)`
 
   &:hover::after {
     width: 100%;
+  }
+`;
+
+const AuthButtons = styled.div`
+  display: flex;
+  gap: 1rem;
+`;
+
+const LoginButton = styled.button`
+  padding: 0.5rem 1rem;
+  background: transparent;
+  color: #646cff;
+  border: 1px solid #646cff;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: rgba(100, 108, 255, 0.1);
+    transform: translateY(-2px);
+  }
+`;
+
+const SignupButton = styled.button`
+  padding: 0.5rem 1rem;
+  background: #646cff;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+
+  &:hover {
+    background: #535bf2;
+    transform: translateY(-2px);
   }
 `;
 

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from "react";
 import AddEntityForm from "./AddEntityForm";
 import styled from 'styled-components';
 import { AiOutlineHeart, AiFillHeart } from 'react-icons/ai';
+import { useNavigate } from 'react-router-dom';
 
 // Base URL for the backend API
 const BASE_URL = 'https://s72-shivam-singh-tempting-but-inedible.onrender.com';
@@ -12,11 +13,18 @@ const Entities = () => {
     const [error, setError] = useState(null);
     const [editingEntity, setEditingEntity] = useState(null);
     const [user, setUser] = useState(null);
+    const navigate = useNavigate();
 
     useEffect(() => {
         const userStr = localStorage.getItem('user');
         if (userStr) {
-            setUser(JSON.parse(userStr));
+            const userData = JSON.parse(userStr);
+            setUser(userData);
+            if (userData.isGuest) {
+                setLoading(false);
+                return;
+            }
+            fetchEntities();
         }
     }, []);
 
@@ -29,10 +37,9 @@ const Entities = () => {
     };
 
     const fetchEntities = async () => {
-        if (!user) return;
+        if (!user || user.isGuest) return;
         
         try {
-            // Updated API endpoint to use Render backend
             const response = await fetch(`${BASE_URL}/api/entities?userId=${user.id}`);
             if (!response.ok) {
                 throw new Error("Failed to fetch data");
@@ -48,7 +55,7 @@ const Entities = () => {
     };
 
     useEffect(() => {
-        if (user) {
+        if (user && !user.isGuest) {
             fetchEntities();
         }
     }, [user]);
@@ -63,7 +70,6 @@ const Entities = () => {
         }
 
         try {
-            // Updated API endpoint to use Render backend
             const response = await fetch(`${BASE_URL}/api/entities/${id}?userId=${user.id}`, {
                 method: 'DELETE',
             });
@@ -85,7 +91,6 @@ const Entities = () => {
 
     const handleUpdate = async (id, updatedData) => {
         try {
-            // Updated API endpoint to use Render backend
             const response = await fetch(`${BASE_URL}/api/entities/${id}`, {
                 method: 'PUT',
                 headers: {
@@ -109,6 +114,40 @@ const Entities = () => {
     if (!user) return <StyledMessage>Please log in to view your collection.</StyledMessage>;
     if (loading) return <StyledMessage>Loading...</StyledMessage>;
     if (error) return <StyledMessage>Error: {error}</StyledMessage>;
+    if (user.isGuest) {
+        const handleGuestAction = (action) => {
+            // Clear the guest user data
+            localStorage.removeItem('user');
+            // Navigate to the appropriate page
+            navigate(action === 'signup' ? '/signup' : '/login');
+        };
+
+        return (
+            <GuestContainer>
+                <GuestMessage>
+                    <GuestTitle>Guest Access Limited</GuestTitle>
+                    <GuestDescription>
+                        As a guest user, you can browse collections but cannot create or manage your own collection.
+                        Please sign up for a full account to:
+                    </GuestDescription>
+                    <GuestFeatures>
+                        <Feature>• Create and manage your collection</Feature>
+                        <Feature>• Add new items</Feature>
+                        <Feature>• Edit and delete your items</Feature>
+                        <Feature>• Get full access to all features</Feature>
+                    </GuestFeatures>
+                    <GuestButtons>
+                        <SignupButton onClick={() => handleGuestAction('signup')}>
+                            Sign Up Now
+                        </SignupButton>
+                        <LoginButton onClick={() => handleGuestAction('login')}>
+                            Log In
+                        </LoginButton>
+                    </GuestButtons>
+                </GuestMessage>
+            </GuestContainer>
+        );
+    }
 
     return (
         <Container>
@@ -337,6 +376,100 @@ const EmptyMessage = styled.p`
     font-size: 1.2rem;
     background: rgba(255, 255, 255, 0.05);
     border-radius: 16px;
+`;
+
+const GuestContainer = styled.div`
+    padding: 7rem 2rem 2rem;
+    max-width: 800px;
+    margin: 0 auto;
+    min-height: 100vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+`;
+
+const GuestMessage = styled.div`
+    background: rgba(30, 30, 30, 0.6);
+    padding: 3rem;
+    border-radius: 20px;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    text-align: center;
+    width: 100%;
+`;
+
+const GuestTitle = styled.h1`
+    font-size: 2.5rem;
+    background: linear-gradient(45deg, #646cff, #ff6b6b);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    margin-bottom: 2rem;
+`;
+
+const GuestDescription = styled.p`
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
+`;
+
+const GuestFeatures = styled.div`
+    text-align: left;
+    margin: 2rem 0;
+    padding: 1.5rem;
+    background: rgba(255, 255, 255, 0.05);
+    border-radius: 12px;
+`;
+
+const Feature = styled.div`
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.1rem;
+    margin-bottom: 1rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+
+    &:last-child {
+        margin-bottom: 0;
+    }
+`;
+
+const GuestButtons = styled.div`
+    display: flex;
+    gap: 1rem;
+    justify-content: center;
+    margin-top: 2rem;
+`;
+
+const SignupButton = styled.button`
+    padding: 1rem 2rem;
+    background: linear-gradient(45deg, #646cff, #ff6b6b);
+    color: white;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 7px 20px rgba(100, 108, 255, 0.4);
+    }
+`;
+
+const LoginButton = styled.button`
+    padding: 1rem 2rem;
+    background: transparent;
+    color: #646cff;
+    border: 1px solid #646cff;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+
+    &:hover {
+        background: rgba(100, 108, 255, 0.1);
+        transform: translateY(-2px);
+    }
 `;
 
 export default Entities;
