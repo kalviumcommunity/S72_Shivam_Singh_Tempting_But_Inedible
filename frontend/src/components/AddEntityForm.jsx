@@ -36,7 +36,7 @@ const AddEntityForm = ({ onEntityAdded, editingEntity, onUpdate, onCancel, userI
         if (!formData.name.trim()) return 'Item Name is required.';
         if (!formData.category) return 'Category is required.';
         if (formData.category === 'others' && !formData.customCategory.trim()) return 'Custom category is required.';
-        if (formData.img && !/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/.test(formData.img)) return 'Enter a valid image URL (jpg, png, gif, webp).';
+        // if (formData.img && !/^https?:\/\/.+\.(jpg|jpeg|png|gif|webp)$/.test(formData.img)) return 'Enter a valid image URL (jpg, png, gif, webp).';
         return '';
     };
 
