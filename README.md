@@ -6,6 +6,11 @@
 
 ---
 
+## 🚀 Live Demo  
+👉 [Check out my live project here](https://asap-shivam.netlify.app/home)  
+
+---
+
 ### **Project Overview:**  
 This project is a web application where users can log in to create and manage a personalized list of visually appealing but inedible objects. Examples include soaps shaped like desserts, colorful crayons, and decorative candles. The goal is to build a fun and engaging platform while applying core full-stack development concepts.  
 
